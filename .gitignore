@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 환경 변수 / 자격증명 - 절대 커밋하지 않는다
+.env
+.env.*
+!.env.example
+
+# Claude Code 로컬 상태
+.claude/
+
+# 런타임 산출물 (save_meal_plan_to_file 이 만드는 식단표 등)
+output/
+
+# OS
+.DS_Store
+Thumbs.db
