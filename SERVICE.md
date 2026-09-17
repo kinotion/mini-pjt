@@ -173,6 +173,7 @@ SEASONAL_INGREDIENTS = {
 | `check_allergen` | 레시피의 **재료를 구성 성분까지 펼쳐**, 사용자가 정의한 알레르기 프로필과 충돌하는지 확인 | 일반 |
 | `search_nutrition_guidelines` | 영양 지식 문서에서 관련 근거를 검색 (RAG, TF-IDF 기반) | 일반 |
 | `get_household_memory` | 장기 기억에서 자녀 나이·선호와 냉장고 재료 목록을 조회 (알레르기 프로필은 기동 시 로딩되어 항상 적용) | 일반 |
+| `get_allergy_profile` | 알레르기 프로필 내용(무엇에·얼마나 심하게)을 조회. 사용자가 프로필 자체를 물어볼 때 사용 - **읽기 전용**, 대응하는 쓰기 도구 없음 | 일반 |
 | `update_household_memory` | 자녀 나이·선호 변경, 재료 구매/소진을 장기 기억에 반영. **알레르기는 건드리지 않는다** | 일반 (변경 이력 로그 권장) |
 | `generate_meal_plan_table` | 확정된 메뉴를 최종 식단표(마크다운)로 정리 | 일반 |
 | `save_meal_plan_to_file` | 식단표를 로컬 파일로 저장 | **위험 (HITL 승인 필요)** |

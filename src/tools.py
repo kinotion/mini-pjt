@@ -108,13 +108,37 @@ def _excluded_ingredient_ids(child_name: str | None = None) -> set[str]:
 def get_household_memory() -> str:
     """장기 기억에 저장된 자녀 정보(이름·나이·선호)와 냉장고 재료 목록을 조회합니다.
 
-    알레르기 정보는 여기 포함되지 않습니다 - 알레르기는 check_allergen이 별도의
-    알레르기 프로필로 항상 자동 적용하므로 이 도구로 확인할 필요가 없습니다.
+    알레르기 정보는 여기 포함되지 않습니다 - 알레르기가 뭔지는 get_allergy_profile로,
+    특정 메뉴가 알레르기와 충돌하는지는 check_allergen으로 확인하세요.
     식단을 추천하거나 보유 재료를 언급하기 전에는 먼저 이 도구로 현재 상태를 확인하세요.
     """
     memory = _load_json(MEMORY_STORE_PATH)
     payload = {"children": memory["children"], "ingredients": memory["ingredients"]}
     return json.dumps(payload, ensure_ascii=False)
+
+
+@tool
+def get_allergy_profile() -> str:
+    """아이의 알레르기 프로필(무엇에 알레르기가 있는지, 심각도, 메모)을 조회합니다.
+
+    "우리 아이 알레르기가 뭐였지?", "알레르기 프로필 좀 보여줘"처럼 사용자가 프로필
+    내용 자체를 직접 물어볼 때 사용하세요. 이 도구는 읽기 전용입니다 - 알레르기
+    프로필을 바꾸는 도구는 이 시스템에 존재하지 않습니다(정책상 의도된 제약이며,
+    변경하려면 보호자가 data/allergy_profile.json 파일을 직접 수정해야 합니다).
+    특정 레시피가 실제로 안전한지 판정할 때는 이 도구가 아니라 check_allergen을 쓰세요.
+    """
+    profile = _load_json(ALLERGY_PROFILE_PATH)
+    children = [
+        {
+            "name": c["name"],
+            "allergies": [
+                {"term": a["term"], "severity": a["severity"], "note": a.get("note", "")}
+                for a in c["allergies"]
+            ],
+        }
+        for c in profile["children"]
+    ]
+    return json.dumps({"children": children}, ensure_ascii=False)
 
 
 @tool
@@ -322,6 +346,12 @@ def search_nutrition_guidelines(query: str) -> str:
 # ---------------------------------------------------------------------------
 # 식단표 생성 · 저장 (저장은 위험 도구 - HITL 승인 필요)
 # ---------------------------------------------------------------------------
+# v1은 한 번에 최대 3일치(9끼)까지만 지원한다 (SERVICE.md 0장). 시스템 프롬프트로
+# 모델이 4일 이상 요청을 미리 걸러내도록 안내하지만, 모델이 그래도 4일치를 다 검색해
+# 이 도구까지 넘겨버리는 경우를 대비해 여기서도 한 번 더 막는다(안전망).
+MAX_PLAN_DAYS = 3
+
+
 @tool
 def generate_meal_plan_table(plan: list[dict]) -> str:
     """확정된 끼니별 메뉴 목록을 마크다운 표로 정리합니다.
@@ -330,7 +360,17 @@ def generate_meal_plan_table(plan: list[dict]) -> str:
       day(int), meal_type(str), recipe_name(str), fridge_used(bool), note(str, 선택)
     이 표는 아직 파일로 저장되지 않은 상태입니다 - 저장하려면 save_meal_plan_to_file을
     별도로 호출해야 하며, 그 호출은 보호자 승인을 거칩니다.
+
+    v1은 최대 3일치까지만 지원합니다. plan에 4일 이상이 섞여 있으면 표를 만들지 않고
+    안내 메시지만 반환합니다 - 그런 경우 3일 단위로 나눠서 다시 요청하세요.
     """
+    days = {item.get("day") for item in plan}
+    if len(days) > MAX_PLAN_DAYS:
+        return (
+            f"v1은 한 번에 최대 {MAX_PLAN_DAYS}일치 식단표만 지원합니다 "
+            f"(지금 요청은 {len(days)}일치입니다). 3일 단위로 나눠서 다시 요청해 주세요."
+        )
+
     header = "| 일자 | 끼니 | 메뉴 | 냉장고 활용 | 비고 |\n|---|---|---|---|---|\n"
     meal_label = {"breakfast": "아침", "lunch": "점심", "dinner": "저녁", "snack": "간식"}
     rows = []

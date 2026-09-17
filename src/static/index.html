@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>키즈밀플래너</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Hallmark · genre: playful · macrostructure: app-shell (catalog n/a — this page IS a live tool,
+ * not a page about one; header/message-log/composer kept as the structural fingerprint) ·
+ * theme: Hum · enrichment: none (CSS-drawn character mark carries the "alive" moment) ·
+ * nav: none · footer: none (single-route tool, no destinations to link — composer owns bottom chrome)
+ * pre-emit critique: P5 H4 E5 S4 R5 V5
+ * contrast: pass (40–41, see --color-accent-ink / tint-not-fill discipline below)
+ * mobile: pass (34, 49, 50–57 n/a — no image grids, no eyebrows, no sticky elements)
+ * font note: Hum's canonical Plus Jakarta Sans has no Hangul glyphs; substituted Do Hyeon
+ * (display, single confident weight) + Gowun Dodum (body, rounded, friendly-not-childish) to
+ * keep the rounded-sans register in the language the page is actually written in.
+ * mono note: JetBrains Mono is the outlier, scoped to ONE role (tool-call identifiers in the
+ * trace log) repeated across turns — not a third body font creeping in.
+ */
+:root {
+  /* colour — Hum palette, adapted */
+  --color-paper:        oklch(97% 0.012 95);
+  --color-paper-2:      oklch(94% 0.016 95);
+  --color-paper-3:      oklch(91% 0.020 95);
+  --color-rule:         oklch(88% 0.016 95);
+  --color-ink:          oklch(20% 0.012 250);
+  --color-ink-2:        oklch(42% 0.014 250);
+
+  --color-accent:       oklch(86% 0.18 95);   /* pear-yellow — small surfaces only (buttons, mark) */
+  --color-accent-deep:  oklch(72% 0.19 90);   /* pear edge/shadow */
+  --color-accent-ink:   var(--color-ink);     /* text on pear fill — dark, not white (contrast) */
+  --color-accent-2:     oklch(66% 0.18 235);  /* sky-cyan — dots/badges only */
+  --color-link:         oklch(46% 0.16 235);  /* darker cyan for small text — passes contrast */
+  --color-accent-3:     oklch(68% 0.24 18);   /* coral-red — the one emphatic moment */
+
+  --color-user-tint:    oklch(93% 0.045 95);  /* light pear tint, not full-saturation fill */
+  --color-pending-tint: oklch(94% 0.04 25);   /* light coral tint */
+  --color-focus:        oklch(55% 0.17 235);
+
+  /* type */
+  --font-display: "Do Hyeon", "Gowun Dodum", "Apple SD Gothic Neo", sans-serif;
+  --font-body:    "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-md:   1.125rem;
+  --text-lg:   1.375rem;
+
+  /* space — 4pt scale */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs:  0.5rem;
+  --space-sm:  0.75rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2.5rem;
+
+  /* radii — kids-chunky lever (Hum allows up to 28px for kids' builds) */
+  --radius-card:  28px;
+  --radius-pill:  999px;
+  --radius-input: 16px;
+
+  /* motion */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* character mark only — never on buttons/UI state */
+  --dur-micro:   120ms;
+  --dur-short:   220ms;
+  --dur-long:    420ms;
+
+  --control-height: 48px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+}
+
+/* ---------- header ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.mark {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  transform: rotate(-6deg);
+  animation: mark-pulse 4s var(--ease-spring) infinite;
+}
+.mark::before {
+  content: "";
+  position: absolute;
+  inset: 10px 0 0 0;
+  background: var(--color-accent);
+  border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%;
+  box-shadow: 0 4px 0 0 var(--color-accent-deep);
+}
+.mark__grain {
+  position: absolute;
+  top: 5px;
+  width: 6px;
+  height: 6px;
+  background: var(--color-paper);
+  border-radius: 50%;
+}
+.mark__grain:nth-child(1) { left: 11px; }
+.mark__grain:nth-child(2) { left: 19px; top: 2px; }
+.mark__grain:nth-child(3) { left: 27px; }
+
+.mark.is-thinking { animation-duration: 1.1s; }
+
+.star-burst {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background:
+    linear-gradient(90deg, transparent 47%, var(--color-accent-3) 47% 53%, transparent 53%),
+    linear-gradient(0deg,  transparent 47%, var(--color-accent-3) 47% 53%, transparent 53%);
+  animation: star-burst 420ms ease-out forwards;
+  pointer-events: none;
+}
+
+.app-header__text h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.app-header__text p {
+  margin: var(--space-3xs) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+}
+
+/* ---------- message log ---------- */
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  background: var(--color-paper-2);
+}
+
+.row {
+  display: flex;
+  animation: msg-in var(--dur-long) var(--ease-out) forwards;
+}
+.row.user { justify-content: flex-end; }
+.row.assistant { justify-content: flex-start; }
+
+.bubble {
+  max-width: min(72%, 46ch);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-card);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.row.user .bubble {
+  background: var(--color-user-tint);
+  color: var(--color-ink);
+  border-bottom-right-radius: var(--space-xs);
+}
+.row.assistant .bubble {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-bottom-left-radius: var(--space-xs);
+  box-shadow: 0 12px 32px -20px oklch(20% 0.012 250 / 0.14);
+}
+.bubble.pending {
+  background: var(--color-pending-tint);
+}
+
+/* ---------- approval buttons ---------- */
+.approval-buttons {
+  margin-top: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* ---------- shared button system (Hum canonical — push is the feedback) ---------- */
+.btn {
+  --btn-face: var(--color-accent);
+  --btn-ink:  var(--color-accent-ink);
+  --btn-edge: var(--color-accent-deep);
+  --btn-cast: oklch(76% 0.20 95 / 0.45);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  height: var(--control-height);
+  padding-inline: var(--space-lg);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--text-base);
+  white-space: nowrap;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--btn-face);
+  color: var(--btn-ink);
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 var(--btn-edge), 0 6px 12px -3px var(--btn-cast);
+  transition: transform var(--dur-micro) var(--ease-snap),
+              box-shadow var(--dur-micro) var(--ease-snap),
+              background-color var(--dur-short) var(--ease-out),
+              opacity var(--dur-short) var(--ease-out);
+}
+.btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 0 0 var(--btn-edge), 0 12px 22px -4px var(--btn-cast); }
+.btn:active { transform: translateY(3px);  box-shadow: 0 1px 0 0 var(--btn-edge), 0 2px 6px -2px var(--btn-cast); }
+.btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: 0 4px 0 0 var(--btn-edge);
+}
+
+.btn--outline {
+  --btn-face: transparent;
+  --btn-ink:  var(--color-ink);
+  background: var(--btn-face);
+  border: 1.5px solid var(--color-rule);
+  box-shadow: none;
+}
+.btn--outline:hover  { background: var(--color-paper-2); box-shadow: none; }
+.btn--outline:active { background: var(--color-paper-3); box-shadow: none; transform: translateY(1px); }
+
+/* ---------- context / trace details ---------- */
+details {
+  margin-top: var(--space-xs);
+  font-size: var(--text-xs);
+  color: var(--color-ink-2);
+}
+details summary {
+  cursor: pointer;
+  color: var(--color-link);
+  font-weight: 600;
+}
+.context-item, .trace-item {
+  margin-top: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-xs);
+  background: var(--color-paper-2);
+  border-radius: var(--space-xs);
+}
+.context-item b, .trace-item b {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+/* ---------- composer ---------- */
+.typing {
+  padding: 0 var(--space-lg) var(--space-xs);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  background: var(--color-paper-2);
+}
+
+#composer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-paper);
+  border-top: 1px solid var(--color-rule);
+  padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+}
+
+#question {
+  flex: 1;
+  min-width: 0;
+  height: var(--control-height);
+  padding-inline: var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-ink);
+  background: var(--color-paper);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-input);
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+#question::placeholder { color: var(--color-ink-2); opacity: 0.65; }
+#question:hover { background: var(--color-paper-2); }
+#question:focus-visible { outline-color: var(--color-focus); background: var(--color-paper); }
+
+/* ---------- keyframes ---------- */
+@keyframes mark-pulse {
+  0%, 100% { transform: rotate(-6deg) scale(1); }
+  50%      { transform: rotate(-6deg) scale(1.06); }
+}
+@keyframes star-burst {
+  0%   { transform: scale(0) rotate(0deg);   opacity: 1; }
+  60%  { transform: scale(1.2) rotate(35deg); opacity: 0.9; }
+  100% { transform: scale(1.4) rotate(45deg); opacity: 0; }
+}
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- reduced motion (non-negotiable) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 150ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+  }
+  .mark { animation: none; }
+  .row { animation: none; opacity: 1; transform: none; }
+  .star-burst { display: none; }
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 26rem) {
+  .app-header { padding: var(--space-sm) var(--space-md); }
+  #chat { padding: var(--space-md); }
+  #composer { padding: var(--space-sm) var(--space-md); }
+  .bubble { max-width: 82%; }
+}
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="mark" aria-hidden="true">
+      <span class="mark__grain"></span>
+      <span class="mark__grain"></span>
+      <span class="mark__grain"></span>
+    </div>
+    <div class="app-header__text">
+      <h1>키즈밀플래너</h1>
+      <p>아이 나이·알레르기에 맞는 안전한 식단을 추천해 드려요. 예: "31개월 아이 저녁 메뉴 추천해줘"</p>
+    </div>
+  </header>
+
+  <div id="chat"></div>
+  <div class="typing" id="typing" style="display:none;">답변을 준비하고 있어요…</div>
+
+  <div id="composer">
+    <input id="question" type="text" placeholder="궁금한 걸 물어보세요" autocomplete="off" />
+    <button id="send" class="btn">보내기</button>
+  </div>
+
+<script>
+const chatEl = document.getElementById('chat');
+const questionEl = document.getElementById('question');
+const sendBtn = document.getElementById('send');
+const typingEl = document.getElementById('typing');
+const markEl = document.querySelector('.mark');
+
+function addRow(role, bubbleEl) {
+  const row = document.createElement('div');
+  row.className = `row ${role}`;
+  row.appendChild(bubbleEl);
+  chatEl.appendChild(row);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return row;
+}
+
+function addUserMessage(text) {
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  addRow('user', bubble);
+}
+
+function buildContextsDetails(contexts) {
+  if (!contexts || contexts.length === 0) return null;
+  const details = document.createElement('details');
+  const summary = document.createElement('summary');
+  summary.textContent = `근거 문서 ${contexts.length}건`;
+  details.appendChild(summary);
+  contexts.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'context-item';
+    item.innerHTML = `<b>${c.title ?? c.doc_id}</b><br>${c.source ?? ''}`;
+    details.appendChild(item);
+  });
+  return details;
+}
+
+function buildTraceDetails(calls) {
+  if (!calls || calls.length === 0) return null;
+  const details = document.createElement('details');
+  const summary = document.createElement('summary');
+  summary.textContent = `도구 호출 ${calls.length}건`;
+  details.appendChild(summary);
+  calls.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'trace-item';
+    item.innerHTML = `<b>${c.tool}</b>(${JSON.stringify(c.args)})`;
+    details.appendChild(item);
+  });
+  return details;
+}
+
+// 캐릭터 마크가 답변 도착 시 한 번 반짝이는 연출. 순수 시각 효과이며 기존 로직에는 영향 없음.
+function triggerCharacterBurst() {
+  if (!markEl) return;
+  const star = document.createElement('span');
+  star.className = 'star-burst';
+  markEl.appendChild(star);
+  star.addEventListener('animationend', () => star.remove());
+}
+
+function addAssistantMessage(response) {
+  const bubble = document.createElement('div');
+  const isPending = response.trace && response.trace.status === 'pending_approval';
+  bubble.className = 'bubble' + (isPending ? ' pending' : '');
+  bubble.textContent = response.answer;
+
+  const contextsEl = buildContextsDetails(response.contexts);
+  if (contextsEl) bubble.appendChild(contextsEl);
+
+  const traceEl = buildTraceDetails(response.trace ? response.trace.calls : null);
+  if (traceEl) bubble.appendChild(traceEl);
+
+  if (isPending) {
+    const buttons = document.createElement('div');
+    buttons.className = 'approval-buttons';
+
+    const approveBtn = document.createElement('button');
+    approveBtn.className = 'btn';
+    approveBtn.textContent = '승인 (y)';
+    approveBtn.onclick = () => sendQuestion('y', true);
+
+    const rejectBtn = document.createElement('button');
+    rejectBtn.className = 'btn btn--outline';
+    rejectBtn.textContent = '거절 (n)';
+    rejectBtn.onclick = () => sendQuestion('n', true);
+
+    buttons.appendChild(approveBtn);
+    buttons.appendChild(rejectBtn);
+    bubble.appendChild(buttons);
+  } else {
+    triggerCharacterBurst();
+  }
+
+  addRow('assistant', bubble);
+}
+
+async function sendQuestion(text, isApprovalReply) {
+  if (!text) return;
+  if (!isApprovalReply) addUserMessage(text);
+  questionEl.value = '';
+  sendBtn.disabled = true;
+  typingEl.style.display = 'block';
+  if (markEl) markEl.classList.add('is-thinking');
+
+  try {
+    const res = await fetch('/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: text }),
+    });
+    if (!res.ok) throw new Error(`서버 오류 (${res.status})`);
+    const data = await res.json();
+    addAssistantMessage(data);
+  } catch (err) {
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble pending';
+    bubble.textContent = '요청 중 오류가 발생했어요: ' + err.message;
+    addRow('assistant', bubble);
+  } finally {
+    sendBtn.disabled = false;
+    typingEl.style.display = 'none';
+    if (markEl) markEl.classList.remove('is-thinking');
+    questionEl.focus();
+  }
+}
+
+sendBtn.addEventListener('click', () => sendQuestion(questionEl.value.trim(), false));
+questionEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendQuestion(questionEl.value.trim(), false);
+});
+</script>
+</body>
+</html>

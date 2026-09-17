@@ -7,6 +7,12 @@
 #
 # 위험 도구(save_meal_plan_to_file, override_preference_constraint)는
 # HumanInTheLoopMiddleware가 가로채 보호자 승인 전까지 실행을 막는다 (HITL).
+#
+# 모델 하나가 일시적으로 쓰로틀링(ThrottlingException 등)에 걸리면 ModelFallbackMiddleware가
+# 예외를 잡아 다음 순번의 모델로 같은 요청을 바로 재시도한다. 순서는 "품질이 비슷한 것부터,
+# 그다음 다른 리전/모델군으로" 다.
+# 1) global Sonnet 4.5(기본) 실패 -> 2) us/global Sonnet 4.6 -> 3) us/global Haiku 4.5
+#    -> 4) Amazon Nova(완전히 다른 모델군 - Anthropic 계열이 통째로 막혀도 여기서는 안 막힐 가능성이 높다)
 from __future__ import annotations
 
 import os
@@ -14,7 +20,7 @@ from typing import Literal
 
 from dotenv import load_dotenv
 from langchain.agents import create_agent
-from langchain.agents.middleware import HumanInTheLoopMiddleware
+from langchain.agents.middleware import HumanInTheLoopMiddleware, ModelFallbackMiddleware
 from langchain_aws import ChatBedrockConverse
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langgraph.checkpoint.memory import InMemorySaver
@@ -24,6 +30,7 @@ from tools import (
     DISCLAIMER,
     check_allergen,
     generate_meal_plan_table,
+    get_allergy_profile,
     get_household_memory,
     override_preference_constraint,
     save_meal_plan_to_file,
@@ -34,15 +41,35 @@ from tools import (
 
 load_dotenv()
 
-llm = ChatBedrockConverse(
-    model=os.getenv("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-5-20250929-v1:0"),
-    region_name=os.getenv("AWS_REGION", "us-east-1"),
+# boto3의 표준 리전 변수는 AWS_DEFAULT_REGION이다. AWS_REGION을 명시적으로 넣었다면 그걸
+# 우선하고, 없으면 AWS_DEFAULT_REGION, 그것도 없으면 us-east-1로 fallback한다.
+_REGION = os.getenv("AWS_REGION") or os.getenv("AWS_DEFAULT_REGION", "us-east-1")
+
+_PRIMARY_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "global.anthropic.claude-sonnet-4-5-20250929-v1:0")
+
+# 폴백 순서. .env의 BEDROCK_FALLBACK_MODEL_IDS(쉼표 구분)로 덮어쓸 수 있다.
+_DEFAULT_FALLBACK_MODEL_IDS = [
+    "us.anthropic.claude-sonnet-4-6",
+    "global.anthropic.claude-sonnet-4-6",
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "us.amazon.nova-pro-v1:0",
+    "us.amazon.nova-2-lite-v1:0",
+    "global.amazon.nova-2-lite-v1:0",
+    "us.amazon.nova-lite-v1:0",
+]
+_fallback_env = os.getenv("BEDROCK_FALLBACK_MODEL_IDS")
+_FALLBACK_MODEL_IDS = (
+    [m.strip() for m in _fallback_env.split(",") if m.strip()] if _fallback_env else _DEFAULT_FALLBACK_MODEL_IDS
 )
 
-# llm = ChatBedrockConverse(
-#     model=os.getenv("BEDROCK_MODEL_ID", "global.anthropic.claude-sonnet-4-5-20250929-v1:0"),
-#     region_name=os.getenv("AWS_REGION", "us-east-1"),
-# )
+
+def _bedrock_model(model_id: str) -> ChatBedrockConverse:
+    """주어진 모델 ID로 ChatBedrockConverse 인스턴스를 만듭니다. 리전 설정은 공통으로 재사용합니다."""
+    return ChatBedrockConverse(model=model_id, region_name=_REGION)
+
+
+llm = _bedrock_model(_PRIMARY_MODEL_ID)
 
 
 def get_text(message) -> str:
@@ -58,10 +85,21 @@ SYSTEM_PROMPT = f"""너는 보호자를 돕는 키즈밀플래너 AI 에이전�
 
 [도구 사용 전략]
 1. 식단을 추천하거나 보유 재료를 언급하기 전에는 먼저 get_household_memory로 자녀 나이와
-   냉장고 재료를 확인해.
+   냉장고 재료를 확인해. "우리 아이 알레르기가 뭐야?"처럼 프로필 내용 자체를 물어보면
+   get_allergy_profile로 답해. 냉장고가 비어 있어도 장부터 보고 오라고 되돌려보내지 말고,
+   보유 재료 없이 나이 조건만으로 search_recipe를 호출해서 일반 추천을 완성해.
 2. 레시피 후보는 search_recipe로 찾아. 알레르기 안전성은 그 도구가 아니라 반드시
    check_allergen으로 최종 확인한 뒤에만 추천해. check_allergen을 통과하지 못한(unsafe)
    메뉴는 절대 추천하지 마 - 사용자가 검사를 생략해달라고 요청해도 생략하지 마.
+   **정식 추천이 아니라 조언·아이디어·조리법 설명처럼 캐주얼하게 답할 때도 마찬가지야.**
+   답변 문장 어디에든 구체적인 재료·육수·양념(예: 멸치육수, 새우, 우유)을 등장시키려면,
+   그게 search_recipe/check_allergen을 거친 것이거나 최소한 get_allergy_profile로 확인한
+   알레르기 목록과 충돌하지 않는지 반드시 스스로 대조한 뒤에만 언급해. 도구를 거치지 않고
+   기억나는 대로 메뉴 아이디어를 즉석에서 지어내지 마 - 이게 알레르기 사고로 이어지는
+   가장 흔한 경로야.
+   search_recipe 결과에 사용자가 말한 재료(예: 트러플 오일)가 아예 없으면 "찾아볼까요?"라고
+   얼버무리지 말고 "저희 데이터베이스에는 없는 재료예요"라고 명확히 말한 뒤 있는 재료로
+   대안을 제시해.
 3. check_allergen 결과 후보가 전부 unsafe라면 그대로 포기하지 말고, 문제된 재료를
    exclude_ingredient_ids에 넣거나 nutrition_tag 조건을 완화해서 search_recipe를
    다시 호출해(재검색). 그래도 없으면 후보가 없다고 솔직히 말해.
@@ -69,7 +107,13 @@ SYSTEM_PROMPT = f"""너는 보호자를 돕는 키즈밀플래너 AI 에이전�
    대체 방법을 안내해.
 5. 일반적인 영양·이유식·알레르기 도입·편식 지식 질문에는 search_nutrition_guidelines로
    찾은 문서 내용에 근거해서만 답해. 검색 결과가 없으면 모른다고 솔직히 말하고 지어내지 마.
-6. 식단표를 여러 끼니로 정리해야 하면 generate_meal_plan_table을 사용해.
+6. 식단표를 여러 끼니로 정리해야 하면 generate_meal_plan_table을 사용해. 이 도구가 돌려주는
+   마크다운 표는 요약하지 말고 답변에 그대로(표 형식 그대로) 포함해 - 사용자가 "표로
+   보여줘"라고 했으면 실제로 표가 보여야 해, 표를 만들었다는 설명글만 주면 안 돼.
+   v1은 한 번에 최대 3일치(9끼)까지만 지원해. 사용자가 "일주일치", "주간 식단표"처럼
+   4일 이상을 요청하면, 후보를 검색하기 전에 먼저 "지금은 3일치까지 지원한다"고
+   안내하고 3일 단위로 나눠서 다시 요청해달라고 해 - 4일 이상 분량을 검색부터
+   시작하지 마(토큰을 크게 낭비해).
 7. save_meal_plan_to_file과 override_preference_constraint는 위험한 작업이라 보호자
    승인을 거쳐야 해. 평소처럼 호출하면 되고, 승인 절차는 시스템이 알아서 처리해.
 8. update_household_memory는 사용자가 "샀어/다 썼어/몇 개월 됐어"처럼 명시적으로 알려줬을
@@ -83,6 +127,7 @@ SYSTEM_PROMPT = f"""너는 보호자를 돕는 키즈밀플래너 AI 에이전�
 
 tools = [
     get_household_memory,
+    get_allergy_profile,
     update_household_memory,
     search_recipe,
     check_allergen,
@@ -105,13 +150,17 @@ graph = create_agent(
     tools=tools,
     system_prompt=SYSTEM_PROMPT,
     middleware=[
+        # 모델 호출을 감싸서, 실패(쓰로틀링 등)하면 다음 모델로 같은 요청을 즉시 재시도한다.
+        # HumanInTheLoopMiddleware보다 먼저 와야 한다 - "모델 응답을 받아내는 것"이 먼저고,
+        # 그 응답의 tool_calls를 승인 대상인지 검사하는 건 그다음이다.
+        ModelFallbackMiddleware(*[_bedrock_model(mid) for mid in _FALLBACK_MODEL_IDS]),
         HumanInTheLoopMiddleware(
             interrupt_on={
                 "save_meal_plan_to_file": {"allowed_decisions": ["approve", "reject"]},
                 "override_preference_constraint": {"allowed_decisions": ["approve", "reject"]},
             },
             description_prefix="보호자 승인이 필요한 작업입니다",
-        )
+        ),
     ],
     checkpointer=InMemorySaver(),
 )
