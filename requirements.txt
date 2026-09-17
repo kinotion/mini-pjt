@@ -1,0 +1,32 @@
+# 삼성SDS AX 교육 패키지 리스트
+
+# 공통
+boto3
+python-dotenv
+
+# LangChain (1일차~)
+langchain
+langchain-aws
+langchain-community
+langchain-classic
+langchain-text-splitters
+
+# RAG (2일차~)
+langchain-chroma
+rank-bm25
+kiwipiepy
+
+# LangGraph (3일차~)
+langgraph
+langgraph-checkpoint-sqlite
+langgraph-supervisor
+
+# 3) requirements.txt에 버전명시
+
+# MCP (4일차~)
+
+mcp==1.30.0
+
+fastmcp==2.13.0
+
+langchain-mcp-adapters==0.3.2

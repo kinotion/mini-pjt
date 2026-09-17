@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "_comment": "사용자가 직접 작성하는 파일. 우리 아이가 실제로 피해야 하는 것만 적는다. 이 파일이 알레르기 판정의 유일한 진실 원천이며, 에이전트는 대화로 이 파일을 수정하지 않는다.",
+  "_how_to_write": "term 에는 평소 쓰는 말 그대로 적으면 된다(계란/달걀/난류 모두 인식). 넓은 말(생선, 견과류)도 쓸 수 있다. 로딩 시 term 이 어떤 재료들로 해석됐는지 콘솔에 출력되므로 반드시 확인할 것.",
+
+  "children": [
+    {
+      "name": "첫째",
+      "allergies": [
+        {
+          "term": "계란",
+          "severity": "severe",
+          "note": "생후 14개월 두드러기 + 구토. 소아과에서 완전 회피 지시",
+          "also_avoid_ingredients": []
+        },
+        {
+          "term": "우유",
+          "severity": "moderate",
+          "note": "가열 유제품은 소량 가능하나 v1 에서는 전부 회피 처리",
+          "also_avoid_ingredients": []
+        },
+        {
+          "term": "멸치",
+          "severity": "mild",
+          "note": "입 주변 발적. 규제 표시 대상은 아니지만 우리 아이에게는 해당됨",
+          "also_avoid_ingredients": ["anchovy_broth"]
+        }
+      ]
+    }
+  ]
+}

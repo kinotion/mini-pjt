@@ -1,0 +1,866 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-09-16",
+  "_comment": "스키마 확정용 시드 4건. v1 목표는 40건 이상이며, 모든 ingredient_id 는 allergen_map.json 에 존재해야 한다.",
+
+  "enums": {
+    "meal_type": ["breakfast", "lunch", "dinner", "snack"],
+    "texture": ["puree", "mashed", "chopped", "regular"],
+    "difficulty": ["easy", "normal", "hard"]
+  },
+
+  "recipes": [
+    {
+      "id": "beef_veggie_porridge",
+      "name": "소고기 채소죽",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 7,
+      "max_age_months": 24,
+      "texture": "mashed",
+      "base_ingredient": "beef",
+      "ingredients": [
+        { "ingredient_id": "beef", "amount": "20g", "optional": false },
+        { "ingredient_id": "rice", "amount": "30g", "optional": false },
+        { "ingredient_id": "carrot", "amount": "10g", "optional": false },
+        { "ingredient_id": "zucchini", "amount": "10g", "optional": true }
+      ],
+      "nutrition_tags": ["철분", "단백질"],
+      "cook_minutes": 25,
+      "difficulty": "easy",
+      "steps": [
+        "쌀을 불려 소고기와 함께 충분히 익힌다",
+        "당근과 애호박을 곱게 다져 넣고 무르게 끓인다",
+        "아이가 삼키기 쉬운 농도로 물을 조절한다"
+      ],
+      "source": "내부 작성"
+    },
+    {
+      "id": "tofu_veggie_pancake",
+      "name": "두부 채소전",
+      "meal_types": ["lunch", "dinner", "snack"],
+      "min_age_months": 12,
+      "max_age_months": null,
+      "texture": "chopped",
+      "base_ingredient": "tofu",
+      "ingredients": [
+        { "ingredient_id": "tofu", "amount": "1/2모", "optional": false },
+        { "ingredient_id": "wheat_flour", "amount": "2큰술", "optional": false },
+        { "ingredient_id": "egg", "amount": "1개", "optional": true },
+        { "ingredient_id": "carrot", "amount": "20g", "optional": false },
+        { "ingredient_id": "zucchini", "amount": "20g", "optional": true }
+      ],
+      "nutrition_tags": ["단백질", "칼슘"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": [
+        "두부의 물기를 빼고 으깬다",
+        "다진 채소와 밀가루, 달걀을 섞어 반죽한다",
+        "약한 불에서 속까지 익도록 노릇하게 부친다"
+      ],
+      "source": "내부 작성"
+    },
+    {
+      "id": "chicken_veggie_fried_rice",
+      "name": "닭고기 채소 볶음밥",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "chicken",
+      "ingredients": [
+        { "ingredient_id": "chicken", "amount": "50g", "optional": false },
+        { "ingredient_id": "rice", "amount": "1공기", "optional": false },
+        { "ingredient_id": "carrot", "amount": "20g", "optional": false },
+        { "ingredient_id": "onion", "amount": "20g", "optional": false },
+        { "ingredient_id": "soy_sauce", "amount": "1작은술", "optional": true },
+        { "ingredient_id": "sesame_oil", "amount": "1/2작은술", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": [
+        "닭고기와 채소를 잘게 썬다",
+        "닭고기를 먼저 익힌 뒤 채소를 넣고 볶는다",
+        "밥을 넣고 간장으로 약하게 간한 뒤 참기름을 두른다"
+      ],
+      "source": "내부 작성"
+    },
+    {
+      "id": "beef_veggie_stirfry",
+      "name": "소고기 채소볶음",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "beef",
+      "ingredients": [
+        { "ingredient_id": "beef", "amount": "60g", "optional": false },
+        { "ingredient_id": "carrot", "amount": "30g", "optional": false },
+        { "ingredient_id": "zucchini", "amount": "30g", "optional": false },
+        { "ingredient_id": "onion", "amount": "20g", "optional": true }
+      ],
+      "nutrition_tags": ["철분", "단백질"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": [
+        "소고기를 한입 크기로 썰어 볶는다",
+        "채소를 넣고 아삭할 정도로 함께 볶는다",
+        "간은 최소한으로 한다"
+      ],
+      "source": "내부 작성",
+      "_note": "beef_veggie_porridge 와 base_ingredient 가 같다. 다자녀 확장 시 이유식/일반식 짝으로 매칭되는 사례"
+    },
+    {
+      "id": "pumpkin_apple_puree",
+      "name": "단호박 사과 퓨레",
+      "meal_types": ["breakfast", "snack"],
+      "min_age_months": 6,
+      "max_age_months": 12,
+      "texture": "puree",
+      "base_ingredient": "pumpkin",
+      "ingredients": [
+        { "ingredient_id": "pumpkin", "amount": "50g", "optional": false },
+        { "ingredient_id": "apple", "amount": "30g", "optional": true }
+      ],
+      "nutrition_tags": ["비타민A"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["단호박을 푹 쪄서 껍질을 제거한다", "사과를 강판에 갈거나 다져 함께 으깬다", "물을 더해 아이가 삼키기 쉬운 농도로 조절한다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "sweet_potato_banana_mash",
+      "name": "고구마 바나나 매쉬",
+      "meal_types": ["breakfast", "snack"],
+      "min_age_months": 6,
+      "max_age_months": 12,
+      "texture": "puree",
+      "base_ingredient": "sweet_potato",
+      "ingredients": [
+        { "ingredient_id": "sweet_potato", "amount": "50g", "optional": false },
+        { "ingredient_id": "banana", "amount": "1/3개", "optional": false }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["고구마를 삶거나 쪄서 으깬다", "잘 익은 바나나를 함께 으깨 섞는다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "chicken_broccoli_porridge",
+      "name": "닭고기 브로콜리 죽",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 8,
+      "max_age_months": 24,
+      "texture": "mashed",
+      "base_ingredient": "chicken",
+      "ingredients": [
+        { "ingredient_id": "chicken", "amount": "20g", "optional": false },
+        { "ingredient_id": "rice", "amount": "30g", "optional": false },
+        { "ingredient_id": "broccoli", "amount": "15g", "optional": false }
+      ],
+      "nutrition_tags": ["단백질", "비타민C"],
+      "cook_minutes": 25,
+      "difficulty": "easy",
+      "steps": ["쌀을 불려 닭고기와 함께 푹 끓인다", "브로콜리를 데쳐 잘게 다져 넣는다", "무르게 한 번 더 끓인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "tofu_potato_mash",
+      "name": "두부 감자 매쉬",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 7,
+      "max_age_months": 18,
+      "texture": "mashed",
+      "base_ingredient": "tofu",
+      "ingredients": [
+        { "ingredient_id": "tofu", "amount": "30g", "optional": false },
+        { "ingredient_id": "potato", "amount": "40g", "optional": false }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["감자를 삶아 으깬다", "데친 두부를 곱게 으깨 섞는다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "beef_spinach_porridge",
+      "name": "소고기 시금치죽",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 8,
+      "max_age_months": 24,
+      "texture": "mashed",
+      "base_ingredient": "beef",
+      "ingredients": [
+        { "ingredient_id": "beef", "amount": "20g", "optional": false },
+        { "ingredient_id": "rice", "amount": "30g", "optional": false },
+        { "ingredient_id": "spinach", "amount": "15g", "optional": false }
+      ],
+      "nutrition_tags": ["철분"],
+      "cook_minutes": 25,
+      "difficulty": "easy",
+      "steps": ["쌀을 불려 소고기와 함께 끓인다", "데친 시금치를 잘게 다져 넣는다", "무르게 끓여 마무리한다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "pea_corn_porridge",
+      "name": "완두콩 옥수수죽",
+      "meal_types": ["breakfast", "lunch"],
+      "min_age_months": 9,
+      "max_age_months": 24,
+      "texture": "mashed",
+      "base_ingredient": "green_pea",
+      "ingredients": [
+        { "ingredient_id": "rice", "amount": "30g", "optional": false },
+        { "ingredient_id": "green_pea", "amount": "15g", "optional": false },
+        { "ingredient_id": "corn", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 20,
+      "difficulty": "easy",
+      "steps": ["완두콩과 옥수수를 삶아 껍질을 벗긴다", "쌀과 함께 끓여 무르게 만든다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "apple_oat_porridge",
+      "name": "사과 오트밀죽",
+      "meal_types": ["breakfast"],
+      "min_age_months": 6,
+      "max_age_months": 18,
+      "texture": "puree",
+      "base_ingredient": "oat",
+      "ingredients": [
+        { "ingredient_id": "oat", "amount": "20g", "optional": false },
+        { "ingredient_id": "apple", "amount": "30g", "optional": false }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["오트밀을 물에 불려 부드럽게 끓인다", "사과를 강판에 갈아 함께 끓인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "pear_puree",
+      "name": "배 미음",
+      "meal_types": ["snack"],
+      "min_age_months": 6,
+      "max_age_months": 12,
+      "texture": "puree",
+      "base_ingredient": "pear",
+      "ingredients": [
+        { "ingredient_id": "pear", "amount": "50g", "optional": false }
+      ],
+      "nutrition_tags": ["수분"],
+      "cook_minutes": 10,
+      "difficulty": "easy",
+      "steps": ["배를 강판에 갈아 즙과 과육을 함께 살짝 끓인다", "식혀서 아이에게 제공한다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "potato_veggie_soup",
+      "name": "감자 채소수프",
+      "meal_types": ["breakfast", "lunch", "dinner"],
+      "min_age_months": 12,
+      "max_age_months": 36,
+      "texture": "mashed",
+      "base_ingredient": "potato",
+      "ingredients": [
+        { "ingredient_id": "potato", "amount": "50g", "optional": false },
+        { "ingredient_id": "carrot", "amount": "20g", "optional": false },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true },
+        { "ingredient_id": "zucchini", "amount": "20g", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 20,
+      "difficulty": "easy",
+      "steps": ["채소를 잘게 썰어 부드럽게 삶는다", "감자가 으깨질 정도로 푹 끓인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "beef_seaweed_soup",
+      "name": "소고기 미역국",
+      "meal_types": ["breakfast", "lunch", "dinner"],
+      "min_age_months": 12,
+      "max_age_months": null,
+      "texture": "chopped",
+      "base_ingredient": "beef",
+      "ingredients": [
+        { "ingredient_id": "beef", "amount": "40g", "optional": false },
+        { "ingredient_id": "seaweed_miyeok", "amount": "10g", "optional": false },
+        { "ingredient_id": "soy_sauce", "amount": "1작은술", "optional": true },
+        { "ingredient_id": "sesame_oil", "amount": "1/2작은술", "optional": true }
+      ],
+      "nutrition_tags": ["철분", "요오드"],
+      "cook_minutes": 25,
+      "difficulty": "normal",
+      "steps": ["불린 미역을 참기름에 볶는다", "소고기를 넣고 함께 볶은 뒤 물을 부어 끓인다", "간장으로 아주 약하게 간한다"],
+      "source": "내부 작성",
+      "_note": "간장·참기름은 숨은 대두·밀·참깨 성분 예시로 optional 처리"
+    },
+    {
+      "id": "chicken_porridge",
+      "name": "닭죽",
+      "meal_types": ["breakfast", "lunch", "dinner"],
+      "min_age_months": 10,
+      "max_age_months": 30,
+      "texture": "mashed",
+      "base_ingredient": "chicken",
+      "ingredients": [
+        { "ingredient_id": "chicken", "amount": "30g", "optional": false },
+        { "ingredient_id": "rice", "amount": "40g", "optional": false },
+        { "ingredient_id": "carrot", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 25,
+      "difficulty": "easy",
+      "steps": ["닭고기를 삶아 잘게 찢는다", "쌀과 육수로 죽을 끓인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "zucchini_shrimp_porridge",
+      "name": "애호박 새우죽",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 10,
+      "max_age_months": 30,
+      "texture": "mashed",
+      "base_ingredient": "shrimp",
+      "ingredients": [
+        { "ingredient_id": "shrimp", "amount": "20g", "optional": false },
+        { "ingredient_id": "rice", "amount": "40g", "optional": false },
+        { "ingredient_id": "zucchini", "amount": "20g", "optional": false }
+      ],
+      "nutrition_tags": ["단백질", "칼슘"],
+      "cook_minutes": 20,
+      "difficulty": "easy",
+      "steps": ["새우살을 잘게 다진다", "애호박과 함께 쌀죽에 넣어 끓인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "bean_sprout_rice",
+      "name": "콩나물밥",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 15,
+      "max_age_months": null,
+      "texture": "chopped",
+      "base_ingredient": "bean_sprout",
+      "ingredients": [
+        { "ingredient_id": "rice", "amount": "1공기", "optional": false },
+        { "ingredient_id": "bean_sprout", "amount": "40g", "optional": false },
+        { "ingredient_id": "beef", "amount": "20g", "optional": true },
+        { "ingredient_id": "soy_sauce", "amount": "1작은술", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 25,
+      "difficulty": "normal",
+      "steps": ["쌀 위에 콩나물을 올려 함께 밥을 짓는다", "약하게 간장 양념을 곁들인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "potato_veggie_pancake",
+      "name": "감자채소전",
+      "meal_types": ["lunch", "dinner", "snack"],
+      "min_age_months": 12,
+      "max_age_months": null,
+      "texture": "chopped",
+      "base_ingredient": "potato",
+      "ingredients": [
+        { "ingredient_id": "potato", "amount": "1개", "optional": false },
+        { "ingredient_id": "wheat_flour", "amount": "1큰술", "optional": true },
+        { "ingredient_id": "egg", "amount": "1개", "optional": true },
+        { "ingredient_id": "carrot", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["감자를 강판에 갈아 물기를 뺀다", "채소를 다져 섞고 약한 불에 부친다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "beef_radish_soup",
+      "name": "소고기 무국",
+      "meal_types": ["breakfast", "lunch", "dinner"],
+      "min_age_months": 12,
+      "max_age_months": null,
+      "texture": "chopped",
+      "base_ingredient": "beef",
+      "ingredients": [
+        { "ingredient_id": "beef", "amount": "40g", "optional": false },
+        { "ingredient_id": "radish", "amount": "50g", "optional": false },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["철분"],
+      "cook_minutes": 25,
+      "difficulty": "easy",
+      "steps": ["소고기와 무를 볶다가 물을 붓고 끓인다", "무가 투명해질 때까지 푹 끓인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "chicken_potato_braise",
+      "name": "닭고기 감자조림",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 15,
+      "max_age_months": null,
+      "texture": "chopped",
+      "base_ingredient": "chicken",
+      "ingredients": [
+        { "ingredient_id": "chicken", "amount": "60g", "optional": false },
+        { "ingredient_id": "potato", "amount": "50g", "optional": false },
+        { "ingredient_id": "carrot", "amount": "20g", "optional": true },
+        { "ingredient_id": "soy_sauce", "amount": "1작은술", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 25,
+      "difficulty": "normal",
+      "steps": ["닭고기와 감자를 한입 크기로 썬다", "물과 함께 조려 부드럽게 익힌다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "veggie_egg_steam",
+      "name": "채소 계란찜",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 12,
+      "max_age_months": null,
+      "texture": "chopped",
+      "base_ingredient": "egg",
+      "ingredients": [
+        { "ingredient_id": "egg", "amount": "2개", "optional": false },
+        { "ingredient_id": "carrot", "amount": "15g", "optional": true },
+        { "ingredient_id": "onion", "amount": "10g", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["달걀을 풀어 다진 채소와 섞는다", "약한 불이나 찜기로 부드럽게 익힌다"],
+      "source": "내부 작성",
+      "_note": "달걀이 optional:false → 달걀 알레르기 아동에게는 메뉴 전체가 제외되는 사례"
+    },
+    {
+      "id": "beef_tofu_braise",
+      "name": "소고기 두부조림",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 14,
+      "max_age_months": null,
+      "texture": "chopped",
+      "base_ingredient": "tofu",
+      "ingredients": [
+        { "ingredient_id": "beef", "amount": "30g", "optional": false },
+        { "ingredient_id": "tofu", "amount": "1/2모", "optional": false },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true },
+        { "ingredient_id": "soy_sauce", "amount": "1작은술", "optional": true }
+      ],
+      "nutrition_tags": ["단백질", "철분"],
+      "cook_minutes": 20,
+      "difficulty": "easy",
+      "steps": ["두부를 도톰하게 썰어 앞뒤로 지진다", "다진 소고기와 채소를 넣고 약하게 조린다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "curry_rice",
+      "name": "카레라이스",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "curry_powder",
+      "ingredients": [
+        { "ingredient_id": "chicken", "amount": "60g", "optional": true },
+        { "ingredient_id": "potato", "amount": "40g", "optional": false },
+        { "ingredient_id": "carrot", "amount": "30g", "optional": false },
+        { "ingredient_id": "onion", "amount": "30g", "optional": false },
+        { "ingredient_id": "curry_powder", "amount": "1큰술", "optional": false },
+        { "ingredient_id": "rice", "amount": "1공기", "optional": false }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 30,
+      "difficulty": "normal",
+      "steps": ["채소와 고기를 볶다가 물을 붓고 끓인다", "카레가루를 풀어 걸쭉해질 때까지 끓인다", "밥에 곁들인다"],
+      "source": "내부 작성",
+      "_note": "카레가루가 optional:false → 시판 카레가루의 숨은 밀·우유 성분이 메뉴 전체를 막는 사례"
+    },
+    {
+      "id": "japchae",
+      "name": "잡채",
+      "meal_types": ["lunch", "dinner", "snack"],
+      "min_age_months": 30,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "glass_noodle",
+      "ingredients": [
+        { "ingredient_id": "glass_noodle", "amount": "50g", "optional": false },
+        { "ingredient_id": "beef", "amount": "30g", "optional": true },
+        { "ingredient_id": "spinach", "amount": "20g", "optional": true },
+        { "ingredient_id": "carrot", "amount": "20g", "optional": true },
+        { "ingredient_id": "onion", "amount": "20g", "optional": true },
+        { "ingredient_id": "soy_sauce", "amount": "1큰술", "optional": true },
+        { "ingredient_id": "sesame_oil", "amount": "1작은술", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 30,
+      "difficulty": "normal",
+      "steps": ["당면을 삶아 준비한다", "채소와 고기를 각각 볶는다", "당면과 함께 간장·참기름으로 버무린다"],
+      "source": "내부 작성",
+      "_note": "간장·참기름 둘 다 optional → 숨은 대두·밀·참깨 성분이 여러 개 겹치는 사례"
+    },
+    {
+      "id": "sausage_veggie_stirfry",
+      "name": "소시지 야채볶음",
+      "meal_types": ["lunch", "dinner", "snack"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "sausage",
+      "ingredients": [
+        { "ingredient_id": "sausage", "amount": "60g", "optional": false },
+        { "ingredient_id": "onion", "amount": "20g", "optional": true },
+        { "ingredient_id": "carrot", "amount": "20g", "optional": true },
+        { "ingredient_id": "zucchini", "amount": "20g", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["소시지에 칼집을 내어 데친다", "채소와 함께 기름 없이 볶는다"],
+      "source": "내부 작성",
+      "_note": "소시지가 optional:false → 가공식품의 밀·대두·우유 숨은 성분이 메뉴 전체를 막는 사례"
+    },
+    {
+      "id": "mini_gimbap",
+      "name": "미니 김밥",
+      "meal_types": ["lunch", "snack"],
+      "min_age_months": 30,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "rice",
+      "ingredients": [
+        { "ingredient_id": "rice", "amount": "1공기", "optional": false },
+        { "ingredient_id": "seaweed_laver", "amount": "2장", "optional": false },
+        { "ingredient_id": "carrot", "amount": "15g", "optional": true },
+        { "ingredient_id": "spinach", "amount": "15g", "optional": true },
+        { "ingredient_id": "egg", "amount": "1개", "optional": true },
+        { "ingredient_id": "sausage", "amount": "30g", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 25,
+      "difficulty": "normal",
+      "steps": ["재료를 길게 썰어 볶거나 데친다", "김 위에 밥과 재료를 올려 돌돌 만다", "한입 크기로 썬다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "doenjang_soup",
+      "name": "된장국",
+      "meal_types": ["breakfast", "lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "soybean_paste",
+      "ingredients": [
+        { "ingredient_id": "soybean_paste", "amount": "1큰술", "optional": false },
+        { "ingredient_id": "potato", "amount": "30g", "optional": true },
+        { "ingredient_id": "zucchini", "amount": "30g", "optional": true },
+        { "ingredient_id": "onion", "amount": "20g", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["멸치·다시마 육수에 된장을 푼다", "채소를 넣고 끓인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "egg_fried_rice",
+      "name": "계란볶음밥",
+      "meal_types": ["breakfast", "lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "egg",
+      "ingredients": [
+        { "ingredient_id": "egg", "amount": "2개", "optional": false },
+        { "ingredient_id": "rice", "amount": "1공기", "optional": false },
+        { "ingredient_id": "carrot", "amount": "15g", "optional": true },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["달걀을 스크램블한다", "밥, 채소와 함께 볶는다"],
+      "source": "내부 작성",
+      "_note": "달걀이 optional:false인 대표적인 메뉴 전체 제외 사례"
+    },
+    {
+      "id": "bean_sprout_soup",
+      "name": "콩나물국",
+      "meal_types": ["breakfast", "lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "bean_sprout",
+      "ingredients": [
+        { "ingredient_id": "bean_sprout", "amount": "100g", "optional": false },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true },
+        { "ingredient_id": "soy_sauce", "amount": "1작은술", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["콩나물을 물에 데친 뒤 끓인다", "약하게 간장으로 간한다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "cucumber_salad",
+      "name": "오이무침",
+      "meal_types": ["lunch", "dinner", "snack"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "cucumber",
+      "ingredients": [
+        { "ingredient_id": "cucumber", "amount": "1개", "optional": false },
+        { "ingredient_id": "sesame_oil", "amount": "1/2작은술", "optional": true }
+      ],
+      "nutrition_tags": ["수분"],
+      "cook_minutes": 10,
+      "difficulty": "easy",
+      "steps": ["오이를 얇게 썬다", "참기름과 살짝 버무린다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "potato_cream_soup",
+      "name": "감자수프",
+      "meal_types": ["breakfast", "lunch"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "milk",
+      "ingredients": [
+        { "ingredient_id": "potato", "amount": "60g", "optional": false },
+        { "ingredient_id": "milk", "amount": "200ml", "optional": false },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["칼슘"],
+      "cook_minutes": 20,
+      "difficulty": "normal",
+      "steps": ["감자와 양파를 삶아 곱게 간다", "우유를 부어 약불로 끓인다"],
+      "source": "내부 작성",
+      "_note": "우유가 optional:false → 우유 알레르기 아동에게는 메뉴 전체가 제외되는 사례"
+    },
+    {
+      "id": "cheese_potato_gratin",
+      "name": "치즈 감자그라탕",
+      "meal_types": ["lunch", "dinner", "snack"],
+      "min_age_months": 30,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "cheese",
+      "ingredients": [
+        { "ingredient_id": "potato", "amount": "60g", "optional": false },
+        { "ingredient_id": "cheese", "amount": "1장", "optional": false },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["칼슘"],
+      "cook_minutes": 25,
+      "difficulty": "normal",
+      "steps": ["감자를 삶아 얇게 썬다", "치즈를 올려 오븐이나 팬에 녹인다"],
+      "source": "내부 작성",
+      "_note": "치즈(숨은 우유 성분)가 optional:false인 사례"
+    },
+    {
+      "id": "banana_pancake",
+      "name": "바나나 팬케이크",
+      "meal_types": ["breakfast", "snack"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "banana",
+      "ingredients": [
+        { "ingredient_id": "banana", "amount": "1개", "optional": false },
+        { "ingredient_id": "wheat_flour", "amount": "3큰술", "optional": false },
+        { "ingredient_id": "egg", "amount": "1개", "optional": true },
+        { "ingredient_id": "milk", "amount": "50ml", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["바나나를 으깨 밀가루와 반죽한다", "달걀·우유를 더해 농도를 맞춘다(생략 가능)", "약한 불에 노릇하게 부친다"],
+      "source": "내부 작성",
+      "_note": "달걀·우유 둘 다 optional → 두 알레르기가 겹쳐도 바나나 반죽만으로 만들 수 있는 사례"
+    },
+    {
+      "id": "candied_sweet_potato",
+      "name": "고구마맛탕",
+      "meal_types": ["snack"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "sweet_potato",
+      "ingredients": [
+        { "ingredient_id": "sweet_potato", "amount": "200g", "optional": false }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 20,
+      "difficulty": "easy",
+      "steps": ["고구마를 한입 크기로 썰어 튀기듯 굽는다", "설탕물을 살짝 졸여 겉을 코팅한다(생략 가능)"],
+      "source": "내부 작성",
+      "_note": "재료가 단일 - 주요 알레르겐이 전혀 없는 대표적인 안전 간식"
+    },
+    {
+      "id": "apple_oat_cookie",
+      "name": "사과 오트밀 쿠키",
+      "meal_types": ["snack"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "oat",
+      "ingredients": [
+        { "ingredient_id": "oat", "amount": "80g", "optional": false },
+        { "ingredient_id": "apple", "amount": "1/2개", "optional": false },
+        { "ingredient_id": "wheat_flour", "amount": "2큰술", "optional": true },
+        { "ingredient_id": "egg", "amount": "1개", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 25,
+      "difficulty": "normal",
+      "steps": ["사과를 잘게 다져 오트밀과 섞는다", "반죽을 동글납작하게 빚는다", "오븐이나 에어프라이어에 굽는다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "yogurt_fruit_bowl",
+      "name": "요거트 과일볼",
+      "meal_types": ["breakfast", "snack"],
+      "min_age_months": 18,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "yogurt",
+      "ingredients": [
+        { "ingredient_id": "yogurt", "amount": "100g", "optional": false },
+        { "ingredient_id": "banana", "amount": "1/2개", "optional": true },
+        { "ingredient_id": "apple", "amount": "30g", "optional": true }
+      ],
+      "nutrition_tags": ["칼슘"],
+      "cook_minutes": 5,
+      "difficulty": "easy",
+      "steps": ["과일을 잘게 썬다", "플레인 요거트에 섞어낸다"],
+      "source": "내부 작성",
+      "_note": "요거트(숨은 우유 성분)가 optional:false인 사례"
+    },
+    {
+      "id": "tofu_steak",
+      "name": "두부스테이크",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "tofu",
+      "ingredients": [
+        { "ingredient_id": "tofu", "amount": "1모", "optional": false },
+        { "ingredient_id": "egg", "amount": "1개", "optional": true },
+        { "ingredient_id": "wheat_flour", "amount": "1큰술", "optional": true },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 20,
+      "difficulty": "normal",
+      "steps": ["두부의 물기를 빼고 으깬다", "다진 채소와 섞어 동글납작하게 빚는다", "약한 불에 앞뒤로 굽는다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "tomato_pasta",
+      "name": "미니 토마토 파스타",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 30,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "tomato",
+      "ingredients": [
+        { "ingredient_id": "noodle_wheat", "amount": "50g", "optional": false },
+        { "ingredient_id": "tomato", "amount": "50g", "optional": false },
+        { "ingredient_id": "beef", "amount": "30g", "optional": true },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["비타민C"],
+      "cook_minutes": 20,
+      "difficulty": "normal",
+      "steps": ["국수를 삶는다", "토마토를 으깨 소스를 만들고 고기·채소와 볶는다", "삶은 면과 버무린다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "cabbage_doenjang_soup",
+      "name": "양배추 된장국",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "cabbage",
+      "ingredients": [
+        { "ingredient_id": "cabbage", "amount": "50g", "optional": false },
+        { "ingredient_id": "soybean_paste", "amount": "1큰술", "optional": false },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["식이섬유"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["양배추를 채 썬다", "육수에 된장을 풀고 함께 끓인다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "shrimp_fried_rice",
+      "name": "새우볶음밥",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "shrimp",
+      "ingredients": [
+        { "ingredient_id": "shrimp", "amount": "60g", "optional": false },
+        { "ingredient_id": "rice", "amount": "1공기", "optional": false },
+        { "ingredient_id": "egg", "amount": "1개", "optional": true },
+        { "ingredient_id": "carrot", "amount": "15g", "optional": true },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 15,
+      "difficulty": "easy",
+      "steps": ["새우를 잘게 썰어 볶는다", "밥과 채소를 넣고 함께 볶는다"],
+      "source": "내부 작성"
+    },
+    {
+      "id": "mackerel_veggie_braise",
+      "name": "고등어 채소조림",
+      "meal_types": ["lunch", "dinner"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "mackerel",
+      "ingredients": [
+        { "ingredient_id": "mackerel", "amount": "1토막", "optional": false },
+        { "ingredient_id": "radish", "amount": "60g", "optional": false },
+        { "ingredient_id": "onion", "amount": "15g", "optional": true },
+        { "ingredient_id": "soy_sauce", "amount": "1작은술", "optional": true }
+      ],
+      "nutrition_tags": ["오메가3", "단백질"],
+      "cook_minutes": 25,
+      "difficulty": "normal",
+      "steps": ["무를 두툼하게 썰어 냄비 바닥에 깐다", "고등어를 올리고 양념 육수를 부어 졸인다", "가시를 꼼꼼히 발라내고 제공한다"],
+      "source": "내부 작성",
+      "_note": "가시 제거 필수. 고등어 성분은 '고등어'이며 이 가정의 알레르기(멸치)와는 무관해 안전하게 노출되는 예시"
+    },
+    {
+      "id": "rice_cake_soup",
+      "name": "떡국",
+      "meal_types": ["breakfast", "lunch"],
+      "min_age_months": 24,
+      "max_age_months": null,
+      "texture": "regular",
+      "base_ingredient": "rice_cake",
+      "ingredients": [
+        { "ingredient_id": "rice_cake", "amount": "150g", "optional": false },
+        { "ingredient_id": "beef", "amount": "30g", "optional": true },
+        { "ingredient_id": "egg", "amount": "1개", "optional": true },
+        { "ingredient_id": "seaweed_laver", "amount": "1장", "optional": true }
+      ],
+      "nutrition_tags": ["단백질"],
+      "cook_minutes": 20,
+      "difficulty": "easy",
+      "steps": ["떡을 물에 불린다", "육수에 떡을 넣고 끓인 뒤 고명을 올린다"],
+      "source": "내부 작성"
+    }
+  ]
+}

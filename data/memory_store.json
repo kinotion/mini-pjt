@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "household_id": "family_001",
+  "updated_at": "2026-09-16T00:00:00+09:00",
+  "_comment": "장기 기억 저장소. 세션이 끝나도 유지된다. v1 은 단일 가정(family_001) 고정.",
+  "_allergy_note": "알레르기 정보는 여기 두지 않는다. data/allergy_profile.json 이 유일한 원천이며, 에이전트가 대화로 바꿀 수 없는 영역이다.",
+
+  "children": [
+    {
+      "name": "첫째",
+      "age_months": 31,
+      "birth_date": null,
+      "dislikes": ["시금치"],
+      "updated_at": "2026-09-16T00:00:00+09:00"
+    }
+  ],
+
+  "ingredients": [
+    {
+      "ingredient_id": "tofu",
+      "display": "두부",
+      "quantity": "1모",
+      "expiry_date": "2026-09-20",
+      "updated_at": "2026-09-16T00:00:00+09:00"
+    },
+    {
+      "ingredient_id": "carrot",
+      "display": "당근",
+      "quantity": "2개",
+      "expiry_date": "2026-09-25",
+      "updated_at": "2026-09-16T00:00:00+09:00"
+    },
+    {
+      "ingredient_id": "rice",
+      "display": "쌀",
+      "quantity": "넉넉함",
+      "expiry_date": null,
+      "updated_at": "2026-09-16T00:00:00+09:00"
+    }
+  ],
+
+  "change_log": [
+    {
+      "at": "2026-09-16T00:00:00+09:00",
+      "action": "init",
+      "target": null,
+      "detail": "초기 시드 데이터"
+    }
+  ]
+}
