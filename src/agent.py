@@ -13,9 +13,14 @@
 # 그다음 다른 리전/모델군으로" 다.
 # 1) global Sonnet 4.5(기본) 실패 -> 2) us/global Sonnet 4.6 -> 3) us/global Haiku 4.5
 #    -> 4) Amazon Nova(완전히 다른 모델군 - Anthropic 계열이 통째로 막혀도 여기서는 안 막힐 가능성이 높다)
+#
+# Observability/Trace: 외부 서버(LangSmith 등)를 쓰지 않고 local_tracer.py의 FileTracer로
+# LLM 호출·도구 호출을 로컬 JSONL 파일(logs/trace.jsonl)에 직접 기록한다. graph.invoke의
+# config에 callbacks로 넘기면 그 실행 트리 전체(모델 호출 + 도구 호출)에 전파된다.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
@@ -26,6 +31,7 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Command
 
+from local_tracer import FileTracer
 from tools import (
     DISCLAIMER,
     check_allergen,
@@ -70,6 +76,11 @@ def _bedrock_model(model_id: str) -> ChatBedrockConverse:
 
 
 llm = _bedrock_model(_PRIMARY_MODEL_ID)
+
+# logs/trace.jsonl 에 LLM·도구 호출을 한 줄씩 기록한다 (외부 서버 없이 로컬 파일만 사용).
+_LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
+_LOG_DIR.mkdir(exist_ok=True)
+_tracer = FileTracer(path=str(_LOG_DIR / "trace.jsonl"))
 
 
 def get_text(message) -> str:
@@ -213,7 +224,7 @@ def handle_query(
     재개합니다. y/n 같은 사용자 응답을 approve/reject로 변환하는 것은 이 함수를 호출하는
     쪽(향후 만들 API 레이어)의 책임입니다 - 이 함수는 그 판단이 끝난 결과만 받습니다.
     """
-    config = {"configurable": {"thread_id": thread_id}}
+    config = {"configurable": {"thread_id": thread_id}, "callbacks": [_tracer]}
 
     if resume_decision is None:
         result = graph.invoke({"messages": [HumanMessage(content=question)]}, config=config)

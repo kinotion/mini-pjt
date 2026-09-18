@@ -15,6 +15,9 @@ venv/
 # 런타임 산출물 (save_meal_plan_to_file 이 만드는 식단표 등)
 output/
 
+# 로컬 트레이스 로그 (local_tracer.py FileTracer 가 남기는 실행 기록)
+logs/
+
 # OS
 .DS_Store
 Thumbs.db

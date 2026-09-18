@@ -21,6 +21,9 @@ langgraph
 langgraph-checkpoint-sqlite
 langgraph-supervisor
 
+# 평가 - RAGAS (evaluation/run_ragas.py)
+ragas
+
 # 3) requirements.txt에 버전명시
 
 # MCP (4일차~)
